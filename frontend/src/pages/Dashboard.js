@@ -15,7 +15,7 @@ import {
   Delete as DeleteIcon,
   ContentCopy as ContentCopyIcon,
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../services/api';
 
 function Dashboard() {
   const [contents, setContents] = useState([]);
@@ -27,7 +27,7 @@ function Dashboard() {
 
   const fetchContents = async () => {
     try {
-      const response = await axios.get('/api/v1/content');
+      const response = await api.get('/api/v1/content');
       setContents(response.data);
     } catch (error) {
       setError('Failed to fetch content history');
@@ -36,7 +36,7 @@ function Dashboard() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/v1/content/${id}`);
+      await api.delete(`/api/v1/content/${id}`);
       setContents(contents.filter((content) => content.id !== id));
     } catch (error) {
       setError('Failed to delete content');

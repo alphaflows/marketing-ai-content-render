@@ -22,7 +22,7 @@ import {
   Delete as DeleteIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../services/api';
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -40,7 +40,7 @@ function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('/api/v1/users');
+      const response = await api.get('/api/v1/users');
       setUsers(response.data);
     } catch (error) {
       setError('Failed to fetch users');
@@ -49,7 +49,7 @@ function UserManagement() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/v1/users/${id}`);
+      await api.delete(`/api/v1/users/${id}`);
       setUsers(users.filter((user) => user.id !== id));
     } catch (error) {
       setError('Failed to delete user');
@@ -58,7 +58,7 @@ function UserManagement() {
 
   const handleCreateUser = async () => {
     try {
-      const response = await axios.post('/api/v1/users', newUser);
+      const response = await api.post('/api/v1/users', newUser);
       setUsers([...users, response.data]);
       setOpenDialog(false);
       setNewUser({ email: '', password: '', full_name: '' });

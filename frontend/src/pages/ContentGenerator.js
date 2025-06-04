@@ -7,7 +7,6 @@ import {
   TextField,
   Button,
   Box,
-  Chip,
   Alert,
   CircularProgress,
   FormControl,
@@ -15,7 +14,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import axios from 'axios';
+import api from '../services/api';
 
 const CONTENT_TYPES = [
   'Blog Post',
@@ -47,7 +46,6 @@ function ContentGenerator() {
     target_keywords: '',
     product_info: '',
   });
-  const [generatedContent, setGeneratedContent] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -70,8 +68,7 @@ function ContentGenerator() {
         product_info: JSON.parse(formData.product_info),
       };
 
-      const response = await axios.post('/api/v1/content/generate', data);
-      setGeneratedContent(response.data);
+      await api.post('/api/v1/content/generate', data);
       navigate('/dashboard');
     } catch (error) {
       setError(error.response?.data?.detail || 'Failed to generate content');
