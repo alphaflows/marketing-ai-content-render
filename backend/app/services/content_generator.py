@@ -1,12 +1,19 @@
 import requests
+import httpx
 from bs4 import BeautifulSoup
 from typing import List, Dict
-import openai
+# import openai
 from app.core.config import settings
+import logging
+
+logger = logging.getLogger()
+
 
 class ContentGenerator:
     def __init__(self):
-        openai.api_key = settings.OPENAI_API_KEY
+        self.llm_api_url = settings.LLM_API_URL
+        self.llm_api_key = settings.LLM_API_KEY
+        self.llm_model = settings.LLM_MODEL
 
     async def crawl_web_content(self, urls: List[str]) -> List[Dict[str, str]]:
         """Crawl content from provided URLs."""
@@ -26,6 +33,8 @@ class ContentGenerator:
                     "title": title,
                     "content": content
                 })
+
+                logger.info(f"Crawled content: {contents}")
             except Exception as e:
                 print(f"Error crawling {url}: {str(e)}")
                 continue
@@ -52,25 +61,47 @@ Reference Materials:
 
 Please create engaging, SEO-optimized content that incorporates the target keywords naturally while maintaining readability and value for the audience."""
 
+
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a professional marketing content writer with expertise in SEO and technical content."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "model": self.llm_model,
+            "max_tokens": 2000,
+            "temperature": 0.7,
+            "stream": False
+        }
         try:
-            response = await openai.ChatCompletion.acreate(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You are a professional marketing content writer with expertise in SEO and technical content."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=2000
-            )
+            async with httpx.AsyncClient(timeout=30) as client:
+                response = await client.post(
+                    self.llm_api_url,
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {self.llm_api_key}"
+                    },
+                    json=payload
+                )
+                response.raise_for_status()
+                result = response.json()
             
-            generated_content = response.choices[0].message.content
-            
-            return {
-                "title": self._extract_title(generated_content),
-                "content": generated_content
-            }
-        except Exception as e:
-            raise Exception(f"Error generating content: {str(e)}")
+                generated_content = result["choices"][0]["message"]["content"]
+
+                logger.info(f"Generated content: {generated_content}")
+                
+                return {
+                    "title": self._extract_title(generated_content),
+                    "content": generated_content
+                }
+        except httpx.RequestError as e:
+            raise Exception(f"Error generating content: {e}") from e
+
 
     def _format_references(self, references: List[Dict[str, str]]) -> str:
         """Format reference contents for the prompt."""

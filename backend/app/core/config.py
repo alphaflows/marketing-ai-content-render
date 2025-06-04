@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # OpenAI
-    OPENAI_API_KEY: str
+    LLM_API_URL: str
+    LLM_API_KEY: str
+    LLM_MODEL: str
     
     # Server
     HOST: str = "0.0.0.0"
@@ -31,4 +33,47 @@ class Settings(BaseSettings):
         case_sensitive = True
         env_file = ".env"
 
-settings = Settings() 
+
+settings = Settings()
+
+
+import logging
+
+log_level = logging.DEBUG if settings.DEBUG else logging.INFO
+
+
+logging_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "()": "uvicorn.logging.DefaultFormatter",
+            "fmt": "%(levelprefix)s %(asctime)s %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+        },
+        "file": {
+            "formatter": "default",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "logs/app.log",
+            "maxBytes": 10485760,
+            "backupCount": 5,
+        },
+    },
+    "loggers": {
+        "fastapi": {"handlers": ["console", "file"], "level": log_level},
+        "uvicorn": {"handlers": ["console", "file"], "level": log_level},
+        "uvicorn.access": {
+            "handlers": ["console", "file"],
+            "level": log_level,
+            "propagate": False,
+        },
+    },
+    "root": {"handlers": ["console", "file"], "level": log_level},
+}
