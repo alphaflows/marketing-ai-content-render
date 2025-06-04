@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import {
   Container,
   Typography,
@@ -13,6 +13,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Divider,
 } from '@mui/material';
 import api from '../services/api';
 
@@ -36,9 +37,9 @@ const CONTENT_PURPOSES = [
 ];
 
 function ContentGenerator() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [generatedContent, setGeneratedContent] = useState(null);
   const [formData, setFormData] = useState({
     content_type: '',
     purpose: '',
@@ -68,8 +69,8 @@ function ContentGenerator() {
         product_info: JSON.parse(formData.product_info),
       };
 
-      await api.post('/api/v1/content/generate', data);
-      navigate('/dashboard');
+      const response = await api.post('/api/v1/content/generate', data);
+      setGeneratedContent(response.data);
     } catch (error) {
       setError(error.response?.data?.detail || 'Failed to generate content');
     } finally {
@@ -82,7 +83,7 @@ function ContentGenerator() {
       <Typography variant="h4" component="h1" gutterBottom>
         Generate Content
       </Typography>
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: 3, mb: 3 }}>
         <Box component="form" onSubmit={handleSubmit}>
           <FormControl fullWidth margin="normal">
             <InputLabel>Content Type</InputLabel>
@@ -171,6 +172,32 @@ function ContentGenerator() {
           </Button>
         </Box>
       </Paper>
+
+      {generatedContent && (
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h5" gutterBottom>
+            Generated Content
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box sx={{ 
+            '& img': { maxWidth: '100%' },
+            '& pre': { 
+              backgroundColor: '#f5f5f5',
+              padding: '1rem',
+              borderRadius: '4px',
+              overflowX: 'auto'
+            },
+            '& code': {
+              backgroundColor: '#f5f5f5',
+              padding: '0.2rem 0.4rem',
+              borderRadius: '4px',
+              fontSize: '0.9em'
+            }
+          }}>
+            <ReactMarkdown>{generatedContent.content}</ReactMarkdown>
+          </Box>
+        </Paper>
+      )}
     </Container>
   );
 }

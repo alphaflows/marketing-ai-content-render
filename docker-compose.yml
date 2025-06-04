@@ -16,6 +16,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    shm_size: '1gb'
 
   backend:
     build:
@@ -53,4 +60,5 @@ services:
       - backend
 
 volumes:
-  postgres_data: 
+  postgres_data:
+    driver: local 
