@@ -61,7 +61,7 @@ logging_config = {
         "file": {
             "formatter": "default",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/app.log",
+            "filename": "app.log",
             "maxBytes": 10485760,
             "backupCount": 5,
         },
