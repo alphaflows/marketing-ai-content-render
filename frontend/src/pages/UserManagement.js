@@ -96,14 +96,14 @@ function UserManagement() {
                 <ListItemText
                   primary={user.full_name}
                   secondary={
-                    <>
-                      <Typography variant="body2" color="text.secondary">
+                    <Box>
+                      <Typography component="span" variant="body2" color="text.secondary" display="block">
                         Email: {user.email}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography component="span" variant="body2" color="text.secondary" display="block">
                         Role: {user.is_admin ? 'Admin' : 'User'}
                       </Typography>
-                    </>
+                    </Box>
                   }
                 />
                 <ListItemSecondaryAction>

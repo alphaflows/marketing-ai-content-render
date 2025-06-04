@@ -66,13 +66,13 @@ function Dashboard() {
                   primary={content.title}
                   secondary={
                     <Box>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography component="span" variant="body2" color="text.secondary" display="block">
                         Type: {content.content_type}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography component="span" variant="body2" color="text.secondary" display="block">
                         Purpose: {content.purpose}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography component="span" variant="body2" color="text.secondary" display="block">
                         Created: {new Date(content.created_at).toLocaleString()}
                       </Typography>
                     </Box>
