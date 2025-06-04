@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.api_v1.api import api_router
+from app.db.base_class import Base
+from app.db.session import engine
 
 app = FastAPI(
     title="AI Content Generator",
@@ -18,6 +20,9 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"]
 )
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
