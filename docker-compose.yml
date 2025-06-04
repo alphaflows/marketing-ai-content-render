@@ -16,13 +16,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-        reservations:
-          memory: 512M
-    shm_size: '1gb'
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 1G
+    #     reservations:
+    #       memory: 512M
+    # shm_size: '1gb'
 
   backend:
     build:
@@ -33,7 +33,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - SECRET_KEY=${SECRET_KEY}
       - FRONTEND_URL=http://localhost:3000
     ports:
